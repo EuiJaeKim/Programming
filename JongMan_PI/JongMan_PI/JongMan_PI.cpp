@@ -55,7 +55,7 @@ int Solve(int StartX)
 	if (Cache[StartX] > 0)
 		return Cache[StartX];
 	Cache[StartX] = -1;
-
+		
 
 	if (StartX + Range <= N) {
 		TempRet[0] = Solve(StartX + Range);
