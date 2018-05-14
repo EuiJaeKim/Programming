@@ -11,65 +11,65 @@ using namespace std;
 */
 
 int N, M; // A 와 B 의 길이 n 과 m 이 주어집니다 (1 <= n,m <= 100)
-int MAX;
-int Cache[100][100];
-int A[100] = { 0, }, B[100] = { 0, };
+int Cache[101][101];
+int ABArr[2][100] = { 0, };
 
-int Solve(int IsArr, int Count, int min);
-int Max(int X, int Y) { if (X > Y) return X; else return Y; }
+int Solve(int AX, int BX);
+long long Max(long long X, long long Y) { if (X > Y) return X; else return Y; }\
 
 int main()
 {
 	int TC;
-	int input;
 
 	cin >> TC;
 	for (int i = 0; i < TC; i++) {
 		cin >> N >> M;
-		MAX = 0;
-		for (int j = 0; j < N; j++) 
-			cin >> A[j];
+
+		for (int j = 0; j < N; j++)
+			cin >> ABArr[0][j];
 		for (int j = 0; j < M; j++)
-			cin >> B[j];
-		for (int j = 0; j < 100; j++)
-			for (int k = 0; k < 100; k++)
-				Cache[j][k] = 0;
+			cin >> ABArr[1][j];
+		for (int j = 0; j < 101; j++)
+			for (int k = 0; k < 101; k++)
+				Cache[j][k] = -1; // -1 로 초기화 하는 이유는 ABArr[AX][BX]이 입력일때 AX+@ , BX+@ 의 반복문을 검사했을 경우, 큰값이 안나올때임(최대값을 찾았을때)
 
 
-		cout << MAX << endl;
+		cout << Solve(-1, -1) << endl; // -1, -1로 콜 하는 이유는 반복문에서 AX,BX 다음 값을 기준으로 봐야하는데 0,0을 시작으로 해야 하기때문.
 	}
 	return 0;
 }
 
 int Solve(int AX, int BX)
 {
-	/* 하 안풀린다 난이도 하 인데 왜 못풀지.. 일단.. 풀이를 보았다..
-	문자열 2개 합치는거니까 dvide 하는 개념으로.. 접근..해보자.. 일단.. 오늘은 접고 내일할거임
-	*/
+	int& Res = Cache[AX + 1][BX + 1]; // -1,-1일때를 대비 해서 각 +1 해주자
 
-	
+	if (Res != -1) // -1이 아니다? 즉 이전에 계산했었다.
+		return Res;
 
-	//if (IsArr == 0) {
-	//	for (int i = Count + 1; i < N; i++) {
-	//		if (A[i] > A[Count]) { // 증가하고
-	//			if (CacheA[i] == 0) // 계산 했던 곳이 아니면
-	//				CacheA[Count] = Max(CacheA[Count], Solve(0, i, min) + 1);
-	//			else // 계산 했던 곳이면
-	//				CacheA[Count] = Max(CacheA[Count], CacheA[i] + 1);
-	//		}
-	//	}
-	//	for (int i = min + 1; i < M; i++) {
-	//		if (B[i] > A[Count]) { // 증가하고
-	//			if (CacheB[i] == 0) // 계산 했던 곳이 아니면
-	//				CacheA[Count] = Max(CacheA[Count], Solve(1, i, Count) + 1);
-	//			else // 계산 했던 곳이면
-	//				CacheA[Count] = Max(CacheA[Count], CacheB[i] + 1);
-	//		}
-	//	}
+	long long CurMax;
+	long long a, b;
+	if (AX == -1)// -1 이기 때문에 배열의 범위를 넘음. 그러니 걍 가장 낮은 값으로 설정
+		a = 0 - 4987654321;
+	else
+		a = ABArr[0][AX];
+	if (BX == -1)// -1 이기 때문에 배열의 범위를 넘음. 그러니 걍 가장 낮은 값으로 설정
+		b = 0 - 4987654321;
+	else
+		b = ABArr[1][BX];
 
-	//	if (CacheA[Count] == 0)
-	//		CacheA[Count] = 1;
-	//	MAX = Max(MAX, CacheA[Count]);
-	//	return CacheA[Count];
-	//}
+	CurMax = Max(a, b); // a랑 b 중에 큰값을 기준으로 두 순열을 비교할꺼임. ex) -4987654321 보다 큰 값이 나오면 Res = Max(Res, Solve() + 1)를 통해 최소 1이 저장됨. 
+	Res = 0;
+	for (int i = AX + 1; i < N; i++) {
+		if (CurMax < ABArr[0][i]) {
+			Res = Max(Res, Solve(i, BX) + 1);
+		}
+	}
+
+	for (int i = BX + 1; i < M; i++) {
+		if (CurMax < ABArr[1][i]) {
+			Res = Max(Res, Solve(AX, i) + 1);
+		}
+	}
+
+	return Res;
 }
