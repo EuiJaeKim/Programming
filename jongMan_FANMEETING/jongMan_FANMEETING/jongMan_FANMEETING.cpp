@@ -18,7 +18,7 @@ int main()
 
 	cin >> TC;
 	for (int i = 0; i < TC; i++) {
-
+		cout << "TEST" << endl;
 	}
 
 	return 0;
