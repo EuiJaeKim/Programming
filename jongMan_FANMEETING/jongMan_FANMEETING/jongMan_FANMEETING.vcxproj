@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{4FF2A3CF-6DE3-429F-98B3-6308E5D7456E}</ProjectGuid>
-    <RootNamespace>jongManFANMEETING</RootNamespace>
+    <ProjectGuid>{1D112951-E84B-447E-A5EA-4E1DA76C87D4}</ProjectGuid>
+    <RootNamespace>JongManFANMEETING</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -115,7 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="jongMan_FANMEETING.cpp" />
+    <ClCompile Include="JongMan_FANMEETING.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
