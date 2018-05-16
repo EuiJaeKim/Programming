@@ -14,6 +14,14 @@ M은 해당하는 사람이 남자, F는 해당하는 사람이 여자임을 나타냅니다. 멤버의 수와 �
 */
 
 /*
+http://devidea.tistory.com/entry/%EB%B6%84%ED%95%A0%EC%A0%95%EB%B3%B5-%EC%B9%B4%EB%9D%BC%EC%B8%A0%EB%B0%94-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98
+https://en.wikipedia.org/wiki/Karatsuba_algorithm
+http://jaimemin.tistory.com/311
+카라츠바 알고리즘(Karatsuba algorithm)으로 해결 가능하다고함.
+분할정복의 대표적인 문제라하니 해봅시당
+*/
+
+/*
 
 반으로 나눌때 if의 조건은 최소길이 이고 left right로 나눌때 left의 끝점은 Start에 (End - Start) / 2을 더해야한다.
 right의 시작점 또한 Start에 (End - Start) / 2을 기준으로 시작해야한다.
@@ -45,8 +53,8 @@ int main()
 		cin >> HyperSenior;
 		cin >> Fans;
 
-		/*cout << Solve(0, Fans.size()) << endl;
-		cout << JongManSolve() << endl;*/
+		cout << Solve(0, Fans.size()) << endl;
+		cout << JongManSolve() << endl;
 		cout << SolveT() << endl;
 		HyperSenior.clear();
 		Fans.clear();
