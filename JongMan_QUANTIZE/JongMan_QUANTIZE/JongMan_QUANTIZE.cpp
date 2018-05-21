@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <math.h>
 #include <algorithm>
 #define MIN(A,B) A>B ? B : A
 
@@ -18,12 +17,13 @@ vector<int> Arr;
 int N, S;/* 수열의 길이 N (1 <= N <= 100), 사용할 숫자의 수 S (1 <= S <= 10) */
 
 int SelectArr[11][2] = { 0, }; /* 1번째 값은 시작 변수 2번째 값은 범위 */
-int Cache[101][11] = { 0, };
-int QSum[11] = { 0, }; /* 구간합 */
-int PSum[11] = { 0, }; /* 구간내 각 제곱의 합 */
+int Cache[101][11];
+int QSum[101] = { 0, }; /* 구간합 */
+int PSum[101] = { 0, }; /* 구간내 각 제곱의 합 */
 int Min;
 
 int Solve(int StartX, int GroupNum);
+int quantize(int from, int parts);
 int MinCal(int GroupCount);
 void Init();
 
@@ -43,6 +43,7 @@ int main()
 		}
 		Init();
 		cout << Solve(0, 0) << endl;
+
 	}
 	return 0;
 }
@@ -58,63 +59,44 @@ void Init()
 	}
 	for (int i = 0; i < 101; i++)
 		for (int j = 0; j < 11; j++)
-			Cache[i][j] = 0;
+			Cache[i][j] = -1;
 }
 
 int Solve(int StartX, int GroupNum)
 {
+	/* base case Cache값이 있다면 리턴. */
+	if (Cache[StartX][GroupNum] != -1)
+		return Cache[StartX][GroupNum];
 
-
-	/* 속도 문제니까
-	StartX 랑 GroupNum 기준으로 Cache 만들어서 접근해
-	리턴값 int로 변경하고.
-	StartX 최대 100이니까 101,
-	GroupNum 최대 10이니까 11.
-
-	다시 짜.
-	*/
-
-
-
-
-
-
-
-
-
-
-
-
-	if (GroupNum > 0 && SelectArr[GroupNum - 1][0] + SelectArr[GroupNum - 1][1] == N)
-		return MinCal(GroupNum);
-
+	/* 아닐경우 계산한다. */
 	SelectArr[GroupNum][0] = StartX;
-	if (GroupNum < S - 1) {
-		for (int i = 1; StartX + i <= N; i++) { /* i는 Group의 크기 */
+	if (StartX != N && GroupNum == S - 1) { // 마지막 그룹인 경우.인데 마지막 그룹인데? StartX == N이면? 들어가네? ㅇㅋ 그럼 빼줍시다
+		SelectArr[GroupNum][1] = N - StartX;
+		Cache[StartX][GroupNum] = MinCal(GroupNum);
+	}
+	else if (StartX == N)
+		return 0;
+	else {
+		Cache[StartX][GroupNum] = 987654321;
+		for (int i = 1; StartX + i <= N; i++) {
 			SelectArr[GroupNum][1] = i;
-			Solve(StartX + i, GroupNum + 1);
+			Cache[StartX][GroupNum] = MIN(Cache[StartX][GroupNum], MinCal(GroupNum) + Solve(StartX + i, GroupNum + 1));
 		}
 	}
-	else {
-		SelectArr[GroupNum][1] = N - StartX;
-		MinCal(GroupNum);
-		Solve(N, GroupNum + 1);
-	}
+	return Cache[StartX][GroupNum];
 }
 
 int MinCal(int GroupCount)
 {
 	int Sum, MiddleValue, SumTemp, PSumTemp;
 
-	Sum = 0;
 	/* SumTemp는 그룹내의 값을 다 더한 값. */
 	SumTemp = QSum[SelectArr[GroupCount][0] + SelectArr[GroupCount][1] - 1] - (SelectArr[GroupCount][0] == 0 ? 0 : QSum[SelectArr[GroupCount][0] - 1]);
 	PSumTemp = PSum[SelectArr[GroupCount][0] + SelectArr[GroupCount][1] - 1] - (SelectArr[GroupCount][0] == 0 ? 0 : PSum[SelectArr[GroupCount][0] - 1]);
 	/* 그룹 안의 숫자들을 더해서 멤버수 만큼 나눈 값은 가장 편차가 작은 값임. 0.5 해주는건 반올림처리  */
 	MiddleValue = (int)(0.5 + ((double)SumTemp / (double)SelectArr[GroupCount][1]));
 
-	Sum += PSumTemp - (2 * MiddleValue*SumTemp) + (MiddleValue*MiddleValue*SelectArr[GroupCount][1]);
+	Sum = PSumTemp - (2 * MiddleValue*SumTemp) + (MiddleValue*MiddleValue*SelectArr[GroupCount][1]);
 	/* 오차 제곱의 합 */
-
-	Min = MIN(Min, Sum);
+	return Sum;
 }
