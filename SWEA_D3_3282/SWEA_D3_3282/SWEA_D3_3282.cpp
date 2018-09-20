@@ -19,48 +19,42 @@ using namespace std;
 #define MAX(A,B) A>B ? A : B
 int N; /* 물건의 개수 (1≤N≤100) */
 int K; /* 가방의 부피 (1≤K≤1000) */
-int Max;
 int Map[100][2]; /* 0 : 부피 1: 가치 */
+int Cache[100][1001];
 
-void Search(int Count, int Cur, int SumC, int SumV);
+int Search(int Count, int Vol);
 
 int main()
 {
-	int TC, Temp;
+	int TC;
 
 	cin >> TC;
 	for (int i = 1; i <= TC; i++) {
 		memset(Map, 0, sizeof(Map));
-		Max = 0;
+		memset(Cache, -1, sizeof(Cache));
 		cin >> N >> K;
 		for (int j = 0; j < N; j++)
 			cin >> Map[j][0] >> Map[j][1];
-		for (int i = 1; i <= N; i++) {
-			Temp = Max;
-			Search(i, 0, 0, 0);
-			if (Temp == Max)
-				break;
-			else
-				Temp = Max;
-		}
-		printf("#%d %d\n", i, Max);
+
+		printf("#%d %d\n", i, Search(0,K));
 	}
 
 	return 0;
 }
 
-void Search(int Count, int Cur, int SumC, int SumV)
+int Search(int Count, int Vol)
 {
-	if (Count == 0)
-		Max = MAX(SumC, Max);
-	else if (SumV + Map[Cur][0] == K) {
-		Max = MAX(SumC, Max);
-	}
-	else if (SumV + Map[Cur][0] < K) {
-		for (int i = Cur; i < N - 1; i++) {
-			if (SumV + Map[i][0] <= K)
-				Search(Count - 1, i + 1, SumC + Map[i][1], SumV + Map[i][0]);
-		}
-	}
-	return;
+	/* Base Case */
+	if (Count == N)
+		return 0;
+
+	if (Cache[Count][Vol] != -1)
+		return Cache[Count][Vol];
+
+	Cache[Count][Vol] = Search(Count + 1, Vol);
+
+	if (Vol >= Map[Count][0])
+		Cache[Count][Vol] = MAX(Cache[Count][Vol], Search(Count + 1, Vol - Map[Count][0]) + Map[Count][1]);
+
+	return Cache[Count][Vol];
 }
