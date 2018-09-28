@@ -1,7 +1,7 @@
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <math.h>
-#include <set>
 
 using namespace std;
 
@@ -10,10 +10,7 @@ int N; // 숫자의 개수 8 ≤ N ≤ 28
 int K; // 크기 순서 K는 생성 가능한 수의 개수보다 크게 주어지지 않는다.
 string Input;
 
-set<int> S;
-set<int>::iterator iter;
-
-void Solve();
+int Solve();
 
 int main()
 {
@@ -23,22 +20,18 @@ int main()
 
 	for (int i = 1; i <= TC; i++) {
 		cin >> N >> K >> Input;
-		Solve();
-
-		iter = S.end();
-		for (int j=0; j<K; j++)
-			iter--;
-		printf("#%d %d\n",i,*iter);
-		S.clear();
+		printf("#%d %d\n", i, Solve());
 		Input.clear();
 	}
 	return 0;
 }
 
-void Solve()
+int Solve()
 {
-	int Start, Count, Temp;
-
+	int Start, Count, Temp, Cnt;
+	int Arr[28];
+	bool Flag;
+	Cnt = 0;
 	for (int i = 0; i < N / 4; i++) {
 		Start = N - i;
 		Temp = 0;
@@ -50,12 +43,23 @@ void Solve()
 				Temp += ((Input[Start++] - 'A' + 10) * (pow(16, Count--)));
 			else
 				Temp += ((Input[Start++] - '0') * (pow(16, Count--)));
-
+			
 			if (Count == -1) {
-				S.insert(Temp);
+				Flag = true;
+				for (int k = 0; k < Cnt; k++) {
+					if (Arr[k] == Temp) {
+						Flag = false;
+						break;
+					}
+				}
+				if (Flag)
+					Arr[Cnt++] = Temp;
 				Temp = 0;
 				Count = (N / 4) - 1;
 			}
 		}
 	}
+	sort(Arr, Arr + Cnt);
+
+	return Arr[Cnt - K];
 }
