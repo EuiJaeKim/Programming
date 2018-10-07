@@ -177,7 +177,7 @@ int Play(int StartX, int StartY, int Way)
 						break;
 					}
 				}
-				else if (Temp == 5) {
+				else {
 					switch (CurWay)
 					{
 					case 0:
@@ -194,27 +194,6 @@ int Play(int StartX, int StartY, int Way)
 						break;
 					}
 				}
-
-				if (CurX + dx[CurWay] == N) {
-					CurWay = 0;
-					Point++;
-				}
-				else if (CurX + dx[CurWay] == -1) {
-					CurWay = 3;
-					Point++;
-				}
-				else if (CurY + dy[CurWay] == N) {
-					CurWay = 2;
-					Point++;
-				}
-				else if (CurY + dy[CurWay] == -1) {
-					CurWay = 1;
-					Point++;
-				}
-				else {
-					CurX += dx[CurWay];
-					CurY += dy[CurWay];
-				}
 			}
 			else {
 				bool Flag = false;
@@ -230,28 +209,27 @@ int Play(int StartX, int StartY, int Way)
 					if (Flag)
 						break;
 				}
-				if (CurX + dx[CurWay] == N) {
-					CurWay = 0;
-					Point++;
-				}
-				else if (CurX + dx[CurWay] == -1) {
-					CurWay = 3;
-					Point++;
-				}
-				else if (CurY + dy[CurWay] == N) {
-					CurWay = 2;
-					Point++;
-				}
-				else if (CurY + dy[CurWay] == -1) {
-					CurWay = 1;
-					Point++;
-				}
-				else {
-					CurX += dx[CurWay];
-					CurY += dy[CurWay];
-				}
 			}
-
+			if (CurX + dx[CurWay] == N) {
+				CurWay = 0;
+				Point++;
+			}
+			else if (CurX + dx[CurWay] == -1) {
+				CurWay = 3;
+				Point++;
+			}
+			else if (CurY + dy[CurWay] == N) {
+				CurWay = 2;
+				Point++;
+			}
+			else if (CurY + dy[CurWay] == -1) {
+				CurWay = 1;
+				Point++;
+			}
+			else {
+				CurX += dx[CurWay];
+				CurY += dy[CurWay];
+			}
 		}
 		else if (Map[CurX][CurY] == -1)
 			break;
