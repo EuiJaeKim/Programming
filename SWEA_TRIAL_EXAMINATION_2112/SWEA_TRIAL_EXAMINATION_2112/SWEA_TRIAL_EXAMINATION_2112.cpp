@@ -30,7 +30,7 @@ int Solve()
 	if (Check())// 안바꿔도 통과입니당
 		return 0;
 
-	for (int i = K - 1; i > 0; i--) { // 1줄부터 바꿔볼꺼야 최대 D개의 줄을 바꿀꺼야 근데 ? 그럴필요가 없지 최대 K개만 바꾸면 되니까 
+	for (int i = 1; i <= K; i++) {
 		for (int j = 0; (j + i) <= D; j++) { // j는 시작 Layer
 			if (Medicine(i, j))
 				return i;
@@ -41,86 +41,65 @@ int Solve()
 
 int Medicine(int Count, int Layer)
 {
-	int Temp[20];
-	int Tem;
-
-	if (Count > 1) { // 2이상이면
-		for (int j = 0; j < W; j++) {// 일단 요층 A형으로 바꿔
+	int Temp[20], Result;
+	if (Count > 1) {
+		for (int i = Layer; i + Count - 1 <= D; i++) {
+			for (int j = 0; j < W; j++) {
+				Temp[j] = Map[Layer][j];
+				Map[Layer][j] = 0;
+			}
+			Result = Medicine(Count - 1, i + 1);
+			if (Result)
+				return 1;
+			for (int j = 0; j < W; j++) {
+				Map[Layer][j] = 1;
+			}
+			Result = Medicine(Count - 1, i + 1);
+			if (Result)
+				return 1;
+			for (int j = 0; j < W; j++) {
+				Map[Layer][j] = Temp[j];
+			}
+		}
+	}
+	else {
+		for (int j = 0; j < W; j++) {
 			Temp[j] = Map[Layer][j];
 			Map[Layer][j] = 0;
 		}
-
-		for (int j = Layer + 1; j + Count - 1 <= D; j++) {
-			Tem = Medicine(Count - 1, j); //내려가~
-			if (Tem)// 밑에서 성공했어!?
-				return 1;
-		}
-		// 실패해써.. B형으로 다시해보자아..
-		for (int j = 0; j < W; j++)
-			Map[Layer][j] = 1;
-
-		for (int j = Layer + 1; j + Count - 1 <= D; j++) {
-			Tem = Medicine(Count - 1, j); //내려가~
-			if (Tem)// 밑에서 성공했어!?
-				return 1;
-		}
-
-		//여긴아닌가봐.. 다른곳으로 가봐..
-		for (int j = 0; j < W; j++) {
-			Map[Layer][j] = Temp[j];
-		}
-		return 0;
-	}
-	else { // count = 1
-		for (int j = 0; j < W; j++) { // 먼저 A형
-			Temp[j] = Map[Layer][j];
-			Map[Layer][j] = 0;
-		}
-
-		if (Check())// 검사했는데 통과면 끝
+		if (Check())
 			return 1;
-
-		// 아니면 B형 넣어
 		for (int j = 0; j < W; j++) {
 			Map[Layer][j] = 1;
 		}
-
-		if (Check()) // 검사해
+		if (Check())
 			return 1;
-
 		for (int j = 0; j < W; j++) {
 			Map[Layer][j] = Temp[j];
 		}
-
-		return 0;
 	}
+	return 0;
 }
 
 int Check()
 {
-	int Temp, TempCount, Flag;
-	Flag = 0;
+	int Temp;
+	bool Flag;
 
 	for (int i = 0; i < W; i++) {
-		Temp = Map[0][i];
-		TempCount = 1;
-		for (int j = 1; j < D; j++) {
-
-			if (Temp == Map[j][i])
-				TempCount++;
-			else {
-				Temp = Map[j][i];
-				TempCount = 1;
-			}
-
-			if (TempCount == K) {
-				Flag++;
+		Flag = false;
+		Temp = 0;
+		for (int k = 0; k < K; k++)
+			Temp += Map[k][i];
+		for (int j = K; j <= D; j++) {
+			if (Temp == K || Temp == 0)
 				break;
-			}
+
+			if (j == D)
+				return 0;
+			Temp -= Map[j - K][i];
+			Temp += Map[j][i];
 		}
 	}
-	if (Flag == W)
-		return 1;
-	else
-		return 0;
+	return 1;
 }
