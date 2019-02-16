@@ -89,6 +89,7 @@ int Solve()
 
 bool Move(int Dir)
 {
+	// Dir -> 0 오른쪽 1 아래쪽 2 왼쪽 3 위쪽
 	int HeadX, HeadY;
 	vector<Body>::iterator iter;
 
