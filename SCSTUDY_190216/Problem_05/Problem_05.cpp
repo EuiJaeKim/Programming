@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <algorithm>
 #define ArrangeCheck(A,B) A >-1 ? A < N ? B >-1 ? B < M ? true :false : false : false : false
 
 using namespace std;
@@ -38,6 +38,8 @@ void Init()
 
 void Move(int order)
 {
+	int* Arr[4];
+	rotate(Arr, Arr + 3,Arr+ 4);
 	if (order == 1) {
 		if (ArrangeCheck(X + dx[order], Y + dy[order])) {
 			int Temp = Rol[1][2];
