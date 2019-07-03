@@ -202,7 +202,7 @@ int makeBlock(int module[][4][4])
 			}
 			CurrentNode = Root;
 			Flag = false;
-			for (register int x = 3; x >= 3; x--) {
+			for (register int x = 3; x >= 0; x--) {
 				for (register int y = 0; y < 4; y++) {
 					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
 						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
@@ -230,8 +230,8 @@ int makeBlock(int module[][4][4])
 			}
 			CurrentNode = Root;
 			Flag = false;
-			for (register int y = 3; y >= 3; y--) {
-				for (register int x = 3; x >= 3; x--) {
+			for (register int y = 3; y >= 0; y--) {
+				for (register int x = 3; x >= 0; x--) {
 					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
 						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
 					else {
