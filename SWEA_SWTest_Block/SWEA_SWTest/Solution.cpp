@@ -84,6 +84,7 @@ int makeBlock(int module[][4][4])
 	Node* CurrentNode;
 	LeafNode* CurrentLeafNode;
 
+
 	Init();
 	/* 1. 트리 만들기 */
 	for (register int i = 0; i < Leng; i++) {
@@ -137,13 +138,15 @@ int makeBlock(int module[][4][4])
 		}
 	}
 
- 	//printf("만들기 끝\n");
+	//printf("만들기 끝\n");
 	/* 2. Pair 검색 과 LeafNode 삭제 */
-	int CCount=0;
+	int CCount;
 	for (register int i = 0; i < Leng; i++) {
-		CurrentNode = Root;
-		Flag = false;
 		if (!PairArr[i]) {
+			CCount = 0;
+			Node* LeafNodeCmp[4] = { nullptr,nullptr ,nullptr ,nullptr };
+			CurrentNode = Root;
+			Flag = false;
 			for (register int x = 0; x < 4; x++) {
 				for (register int y = 3; y >= 0; y--) {
 					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
@@ -156,24 +159,122 @@ int makeBlock(int module[][4][4])
 				if (Flag)
 					break;
 			}
-			if (Flag)
-				continue;
-
 			/* Pair를 찾음. */
-			
-			while (CurrentNode->lfNode != nullptr) {
+			while (!Flag && CurrentNode->lfNode != nullptr) {
 				CurrentLeafNode = CurrentNode->lfNode;
-				CurrentNode->lfNode = CurrentLeafNode->NextLeafNode;
 				if (PairArr[CurrentLeafNode->Module]) {
+					CurrentNode->lfNode = CurrentLeafNode->NextLeafNode;
 					delete(CurrentLeafNode);
 				}
 				else {
-					Ret += (CurrentLeafNode->Max + MinArr[i]);
+					LeafNodeCmp[0] = CurrentNode;
 					CCount++;
-					PairArr[CurrentLeafNode->Module] = true;
-					PairArr[i] = true;
+					break;
+				}
+			}
+			/* 쳌 */
+			CurrentNode = Root;
+			Flag = false;
+			for (register int y = 0; y < 4; y++) {
+				for (register int x = 0; x < 4; x++) {
+					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
+						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
+					else {
+						Flag = true;
+						break;
+					}
+				}
+				if (Flag)
+					break;
+			}
+			/* Pair를 찾음. */
+			while (!Flag && CurrentNode->lfNode != nullptr) {
+				CurrentLeafNode = CurrentNode->lfNode;
+				if (PairArr[CurrentLeafNode->Module]) {
+					CurrentNode->lfNode = CurrentLeafNode->NextLeafNode;
 					delete(CurrentLeafNode);
 				}
+				else {
+					LeafNodeCmp[1] = CurrentNode;
+					CCount++;
+					break;
+				}
+			}
+			CurrentNode = Root;
+			Flag = false;
+			for (register int x = 3; x >= 3; x--) {
+				for (register int y = 0; y < 4; y++) {
+					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
+						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
+					else {
+						Flag = true;
+						break;
+					}
+				}
+				if (Flag)
+					break;
+			}
+			/* Pair를 찾음. */
+			while (!Flag && CurrentNode->lfNode != nullptr) {
+				CurrentLeafNode = CurrentNode->lfNode;
+				if (PairArr[CurrentLeafNode->Module]) {
+					CurrentNode->lfNode = CurrentLeafNode->NextLeafNode;
+					delete(CurrentLeafNode);
+				}
+				else {
+					LeafNodeCmp[2] = CurrentNode;
+					CCount++;
+					break;
+
+				}
+			}
+			CurrentNode = Root;
+			Flag = false;
+			for (register int y = 3; y >= 3; y--) {
+				for (register int x = 3; x >= 3; x--) {
+					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
+						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
+					else {
+						Flag = true;
+						break;
+					}
+				}
+				if (Flag)
+					break;
+			}
+			/* Pair를 찾음. */
+			while (!Flag && CurrentNode->lfNode != nullptr) {
+				CurrentLeafNode = CurrentNode->lfNode;
+				if (PairArr[CurrentLeafNode->Module]) {
+					CurrentNode->lfNode = CurrentLeafNode->NextLeafNode;
+					delete(CurrentLeafNode);
+				}
+				else {
+					LeafNodeCmp[3] = CurrentNode;
+					CCount++;
+					break;
+				}
+			}
+			/* 쳌 */
+			/* Pair 가장 큰 값을 찾아서 Pair 체크. */
+			if (CCount > 0) {
+				int CmpMax = 0;
+				int CmpMaxi;
+				for (int j = 0; j < 4; j++) {
+					if (LeafNodeCmp[j]) {
+						if (LeafNodeCmp[j]->lfNode->Max > CmpMax) {
+							CmpMax = LeafNodeCmp[j]->lfNode->Max;
+							CmpMaxi = j;
+						}
+					}
+				}
+
+				Ret += (CmpMax + MinArr[i]);
+				PairArr[LeafNodeCmp[CmpMaxi]->lfNode->Module] = true;
+				PairArr[i] = true;
+				CurrentLeafNode = LeafNodeCmp[CmpMaxi]->lfNode;
+				LeafNodeCmp[CmpMaxi]->lfNode = CurrentLeafNode->NextLeafNode;
+				delete(CurrentLeafNode);
 			}
 		}
 	}
