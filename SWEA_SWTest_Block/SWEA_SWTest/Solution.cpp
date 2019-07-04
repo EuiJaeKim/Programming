@@ -6,7 +6,6 @@ using namespace std;
 typedef struct LeafNode
 {
 	int Module;
-	int Max;
 	LeafNode* NextLeafNode;
 }LeafNode;
 
@@ -18,6 +17,7 @@ typedef struct Node
 
 Node* Root;
 short MinArr[Leng];
+short MaxArr[Leng];
 bool PairArr[Leng] = { 0, };
 
 void Init()
@@ -38,21 +38,19 @@ void NewNode(Node* Front, int Count)
 	Front->NextNode[Count] = Temp;
 }
 
-void NewLeafNodeFromNode(Node* Front, int InputModule, int InputMax)
+void NewLeafNodeFromNode(Node* Front, int InputModule)
 {
 	LeafNode* Temp;
 	Temp = new LeafNode();
 	Temp->Module = InputModule;
-	Temp->Max = InputMax;
 	Temp->NextLeafNode = nullptr;
 	Front->lfNode = Temp;
 }
 
-void NewLeafNodeFromLeafNode(LeafNode* Front, int InputModule, int InputMax) {
+void NewLeafNodeFromLeafNode(LeafNode* Front, int InputModule) {
 	LeafNode* Temp;
 	Temp = new LeafNode();
 	Temp->Module = InputModule;
-	Temp->Max = InputMax;
 	Temp->NextLeafNode = nullptr;
 	Front->NextLeafNode = Temp;
 }
@@ -79,11 +77,10 @@ void TreeDelete(Node* Current, int Count)
 
 int makeBlock(int module[][4][4])
 {
-	int Val, Max, Min, Ret = 0;
+	int Max, Min, Ret = 0;
 	bool Flag;
 	Node* CurrentNode;
 	LeafNode* CurrentLeafNode;
-
 
 	Init();
 	/* 1. 트리 만들기 */
@@ -101,6 +98,7 @@ int makeBlock(int module[][4][4])
 		}
 		if (Max != Min) {
 			MinArr[i] = short(Min);
+			MaxArr[i] = short(Max);
 			for (register int x = 0; x < 4; x++) {
 				for (register int y = 0; y < 4; y++) {
 					if (CurrentNode->NextNode[module[i][x][y] - Min] == nullptr)
@@ -109,13 +107,13 @@ int makeBlock(int module[][4][4])
 				}
 			}
 			if (CurrentNode->lfNode == nullptr) { // 리프노드에 아무것도 없으면 달아준다.
-				NewLeafNodeFromNode(CurrentNode, i, Max);
+				NewLeafNodeFromNode(CurrentNode, i);
 			}
 			else { // 리프노드에 무언가 있다면
 				LeafNode* Front = nullptr;
 				CurrentLeafNode = CurrentNode->lfNode;
 				while (CurrentLeafNode->NextLeafNode != nullptr) {// 맨뒤 or 넣어야할 곳으로 이동한다.
-					if (CurrentLeafNode->Max > Max) {
+					if (MaxArr[CurrentLeafNode->Module] > Max) {
 						Front = CurrentLeafNode;
 						CurrentLeafNode = CurrentLeafNode->NextLeafNode;
 					}
@@ -124,15 +122,15 @@ int makeBlock(int module[][4][4])
 				}
 				if (Front == nullptr) {// 바로 앞에꺼
 					Front = CurrentNode->lfNode;
-					NewLeafNodeFromNode(CurrentNode, i, Max);
+					NewLeafNodeFromNode(CurrentNode, i);
 					CurrentNode->lfNode->NextLeafNode = Front;
 				}
 				else if (CurrentLeafNode->NextLeafNode != nullptr) {// 중간쯤 어딘가
-					NewLeafNodeFromLeafNode(Front, i, Max);
+					NewLeafNodeFromLeafNode(Front, i);
 					Front->NextLeafNode->NextLeafNode = CurrentLeafNode;
 				}
 				else { // 마지막
-					NewLeafNodeFromLeafNode(CurrentLeafNode, i, Max);
+					NewLeafNodeFromLeafNode(CurrentLeafNode, i);
 				}
 			}
 		}
@@ -144,13 +142,13 @@ int makeBlock(int module[][4][4])
 	for (register int i = 0; i < Leng; i++) {
 		if (!PairArr[i]) {
 			CCount = 0;
-			Node* LeafNodeCmp[4] = { nullptr,nullptr ,nullptr ,nullptr };
+			LeafNode* LeafNodeCmp[4] = { nullptr,nullptr ,nullptr ,nullptr };
 			CurrentNode = Root;
 			Flag = false;
 			for (register int x = 0; x < 4; x++) {
 				for (register int y = 3; y >= 0; y--) {
-					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
-						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
+					if (CurrentNode->NextNode[(MaxArr[i] - module[i][x][y])] != nullptr)
+						CurrentNode = CurrentNode->NextNode[(MaxArr[i] - module[i][x][y])];
 					else {
 						Flag = true;
 						break;
@@ -160,16 +158,17 @@ int makeBlock(int module[][4][4])
 					break;
 			}
 			/* Pair를 찾음. */
-			while (!Flag && CurrentNode->lfNode != nullptr) {
+			if (!Flag) {
 				CurrentLeafNode = CurrentNode->lfNode;
-				if (PairArr[CurrentLeafNode->Module]) {
-					CurrentNode->lfNode = CurrentLeafNode->NextLeafNode;
-					delete(CurrentLeafNode);
-				}
-				else {
-					LeafNodeCmp[0] = CurrentNode;
-					CCount++;
-					break;
+				while (CurrentNode->lfNode != nullptr) {
+					if (PairArr[CurrentLeafNode->Module]) {
+						CurrentNode->lfNode = CurrentLeafNode->NextLeafNode;
+					}
+					else {
+						LeafNodeCmp[0] = CurrentNode;
+						CCount++;
+						break;
+					}
 				}
 			}
 			/* 쳌 */
@@ -177,8 +176,8 @@ int makeBlock(int module[][4][4])
 			Flag = false;
 			for (register int y = 0; y < 4; y++) {
 				for (register int x = 0; x < 4; x++) {
-					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
-						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
+					if (CurrentNode->NextNode[(MaxArr[i] - module[i][x][y])] != nullptr)
+						CurrentNode = CurrentNode->NextNode[(MaxArr[i] - module[i][x][y])];
 					else {
 						Flag = true;
 						break;
@@ -204,8 +203,8 @@ int makeBlock(int module[][4][4])
 			Flag = false;
 			for (register int x = 3; x >= 0; x--) {
 				for (register int y = 0; y < 4; y++) {
-					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
-						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
+					if (CurrentNode->NextNode[(MaxArr[i] - module[i][x][y])] != nullptr)
+						CurrentNode = CurrentNode->NextNode[(MaxArr[i] - module[i][x][y])];
 					else {
 						Flag = true;
 						break;
@@ -232,8 +231,8 @@ int makeBlock(int module[][4][4])
 			Flag = false;
 			for (register int y = 3; y >= 0; y--) {
 				for (register int x = 3; x >= 0; x--) {
-					if (CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])] != nullptr)
-						CurrentNode = CurrentNode->NextNode[2 - (module[i][x][y] - MinArr[i])];
+					if (CurrentNode->NextNode[(MaxArr[i] - module[i][x][y])] != nullptr)
+						CurrentNode = CurrentNode->NextNode[(MaxArr[i] - module[i][x][y])];
 					else {
 						Flag = true;
 						break;
@@ -262,14 +261,14 @@ int makeBlock(int module[][4][4])
 				int CmpMaxi;
 				for (int j = 0; j < 4; j++) {
 					if (LeafNodeCmp[j]) {
-						if (LeafNodeCmp[j]->lfNode->Max > CmpMax) {
-							CmpMax = LeafNodeCmp[j]->lfNode->Max;
+						if (MaxArr[LeafNodeCmp[j]->lfNode->Module] > CmpMax) {
+							CmpMax = MaxArr[LeafNodeCmp[j]->lfNode->Module];
 							CmpMaxi = j;
 						}
 					}
 				}
 
-				Ret += (CmpMax + MinArr[i]);
+				Ret += (CmpMax + MinArr[i])-(MaxArr[i] - MinArr[i]);
 				PairArr[LeafNodeCmp[CmpMaxi]->lfNode->Module] = true;
 				PairArr[i] = true;
 				CurrentLeafNode = LeafNodeCmp[CmpMaxi]->lfNode;
