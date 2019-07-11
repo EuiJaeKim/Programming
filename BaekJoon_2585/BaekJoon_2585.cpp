@@ -13,63 +13,30 @@ typedef struct Node {
 }Node;
 
 Node Map[1002];
-bool visit[1002] = { 0, };
-int visited[1002] = { 0, };
+
 
 int n, k, Min;
 
-int CalFuel(double Distance)
+int CalFuel(int Distance)
 {
 	int Ret;
 	Ret = Distance / 10;
-	if (Distance - Ret > 0)
+	if (Distance - (Ret * 10) > 0)
 		Ret++;
 	return Ret;
 }
 
-int CalDistance(int InputX, int InputY, int InputXX, int InputYY)
-{
-	int x = InputX - InputXX;
-	int y = InputY - InputYY;
-	return CalFuel((double)sqrt(x * x + y * y));
-}
 
-int DFS(int CurK, int Mid, int Start)
+int CalDistance(int From,int To)
 {
-	int Temp;
-	Temp = min(Mid, CalDistance(Map[Start].X, Map[Start].Y, Map[n + 1].X, Map[n + 1].Y));
-	if (CurK == 0) {
-		if (Temp != Mid && Temp < Mid)
-			return Temp;
-		else {
-			visited[Start] = -1;
-			return 0;
-		}
-
-	}
-	else {
-		if (Temp < Mid)
-			return Temp;
-		for (int i = 1; i <= n; i++) {
-			if (visit[i] && visited[i] != -1)
-				continue;
-			Temp = CalDistance(Map[Start].X, Map[Start].Y, Map[i].X, Map[i].Y);
-			if (Temp < Mid) {
-				visit[i] = true;
-				Temp = DFS(CurK - 1, Mid, i);
-				visit[i] = false;
-				if (Temp != 0)
-					return Temp;
-			}
-		}
-	}
-	visited[Start] = -1;
-	return 0;
+	int x = Map[To].X - Map[From].X;
+	int y = Map[To].Y - Map[From].Y;
+	return CalFuel((int)sqrt(x * x + y * y));
 }
 
 bool bfs(int max_cost, int k) {
-	memset(visit, 0, sizeof(visit));
-
+	bool visit[1002] = { 0, };
+	int from, cnt,Tmp;
 	queue<Node> q;
 	Node* Temp;
 	Temp = new Node;
@@ -77,19 +44,23 @@ bool bfs(int max_cost, int k) {
 	q.push(*Temp); // from, k
 
 	while (!q.empty()) {
-		int from = q.front().X;
-		int cnt = q.front().Y;
+		from = q.front().X;
+		cnt = q.front().Y;
 		q.pop();
 
-		if (from == n - 1) {
-			if (cnt <= k + 1) return 1;
-			else return 0;
+		if (from == n + 1) {
+			if (cnt <= k + 1)
+				return 1;
+			else
+				return 0;
 		}
 
-		for (int i = 1; i < n; i++) {
-			if (visit[i]) continue;
+		for (int i = 1; i <= n + 1; i++) {
+			if (visit[i])
+				continue;
+			Tmp = CalDistance(i, from);
+			if (Tmp <= max_cost) {
 
-			if (CalDistance(Map[i].X, Map[i].Y, Map[from].X, Map[from].Y) <= max_cost) {
 				visit[i] = 1;
 				Temp = new Node;
 				Temp->X = i;
@@ -118,14 +89,13 @@ int main()
 	Right = 1415;
 	while (Left <= Right) {
 		Mid = (Left + Right) / 2;
-		//Temp = DFS(k, Mid, Left);
 		Temp = bfs(Mid, k);
 		if (Temp != 0) {
-			Right = Mid - 1;
+			Right = Mid -1;
 		}
 		else
 			Left = Mid + 1;
 	}
-	cout << Left << endl;
+	cout << Left;
 	return 0;
 }
