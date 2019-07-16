@@ -1,30 +1,25 @@
 #include <iostream>
-#include <algorithm>
+#include <queue>
 using namespace std;
-#define Max 3000
 
 int N;
-int Map[3000] = { 0, };
-
-int compare(const void* a, const void* b)
-{
-	return (*(int*)a - *(int*)b);
-}
-
-void init() {
-	cin >> N;
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
-			cin >> Map[j];
-		}
-		qsort(Map, N*2, sizeof(int), compare);
-	}
-}
+priority_queue<int, vector<int>, greater<int>> PQ;
 
 int main()
 {
-	init();
+	int Input;
+	cin >> N;
 
-	cout << Map[N];
+	for (int i = 0; i < N * N; i++) {
+		cin >> Input;
+
+		if (PQ.size() < N)
+			PQ.push(Input);
+		else if (PQ.size() == N && PQ.top() < Input) {
+			PQ.pop();
+			PQ.push(Input);
+		}
+	}
+	cout << PQ.top();
 	return 0;
 }
