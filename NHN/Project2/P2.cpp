@@ -61,3 +61,19 @@ int main()
 
 	return 0;
 }
+
+//12
+//enqueue 1
+//enqueue 2
+//enqueue 2
+//enqueue 1
+//enqueue 2
+//dequeue
+//dequeue
+//dequeue
+//dequeue
+//dequeue
+//enqueue 7
+//dequeue
+//
+//2 1 2 1 2 7

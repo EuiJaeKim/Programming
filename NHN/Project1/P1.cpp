@@ -66,3 +66,24 @@ int main()
 	}
 	return 0;
 }
+
+//3
+//ant bee dragonfly
+//
+//Y
+//3
+//3
+//
+//4
+//ant bee dragonfly ant
+//
+//N
+//4
+//3
+//
+//3
+//ant bee ant
+//
+//Y
+//4
+//2

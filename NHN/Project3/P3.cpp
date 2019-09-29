@@ -44,7 +44,6 @@ int main()
 		CandyCount[i] = 0;
 	//memset(Follower, 0, N * N);
 
-
 	cin.ignore();
 	getline(cin, greeting);
 	Turn = 0;
@@ -115,5 +114,19 @@ void Followers()
 			}
 		}
 	}
-
 }
+
+//5
+//J A Q A J A
+//
+//3 3 1 3 2
+//
+//5
+//K 2 A A A A A A
+//
+//1 2 2 1 1
+//
+//5
+//K 1 K 2 K 0 A Q A
+//
+//3 2 2 2 1
